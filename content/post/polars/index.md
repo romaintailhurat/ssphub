@@ -149,7 +149,7 @@ resultat_python = pl.scan_parquet("Data/dpt2021.parquet").filter(
 ```r
 resultat_R <- scan_parquet(
   file = "Data/dpt2021.parquet")$filter(
-    pl$col("preusuel") %in% c("LINO","ROMAIN","DAMIEN"))$groupby(
+    pl$col("preusuel") == "LINO")$groupby(
       "dpt")$agg(
         pl$col("nombre")$sum()$alias("total")
       )$collect()$as_data_frame() 
