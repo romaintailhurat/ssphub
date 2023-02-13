@@ -78,7 +78,7 @@ On peut toujours lire de manière plus directe (en mode _eager_, "impatient") en
 ```python
 df = pl.read_csv("iris.csv")
 
-df_res = df.lazy() # ?  ici :)
+df_res = df.lazy() # ←  ici :)
   .filter(pl.col("sepal_length") > 5)
   .groupby("species")
   .agg(pl.all().sum())
@@ -111,7 +111,7 @@ pl$DataFrame(
       "Species")$agg(
         pl$col("Sepal.Length")$sum()$alias("Somme_long_sepal"),
         pl$col("Sepal.Length")$mean()$alias("Moyenne_long_sepal")
-      )$as_data_frame() # ?  ne pas oublier cette fonction pour récupérer un R data.frame
+      )$as_data_frame() # ←  ne pas oublier cette fonction pour récupérer un R data.frame
 ```
   
 Et il lit nativement les fichiers Parquet !  
