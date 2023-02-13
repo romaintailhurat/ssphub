@@ -98,7 +98,63 @@ Si Polars travaille vite, il est aussi capable de lire naturellement des jeux de
 df = q.collect(streaming=True)
 ```
 
-Et il lit nativement les fichiers Parquet !
+Un [package R](https://rpolars.github.io/) pour utiliser Polars est en cours de développement (atterissage prévue en mars 2023)... avec une syntaxe identique (remplacez les `.` de Python avec des `$` dans R)... alors plus de raison de se laisser tenter !  
+
+Voici l'équivalent de la rêquête Python avec R et sa table iris :  
+
+```r
+library(rpolars)
+
+pl$DataFrame(
+  iris)$filter(
+    pl$col("Sepal.Length") > 5)$groupby(
+      "Species")$agg(
+        pl$col("Sepal.Length")$sum()$alias("Somme_long_sepal"),
+        pl$col("Sepal.Length")$mean()$alias("Moyenne_long_sepal")
+      )$as_data_frame() # ←  ne pas oublier cette fonction pour récupérer un R data.frame
+```
+  
+Et il lit nativement les fichiers Parquet !  
+
+Tout d'abord, récupérons un fichier parquet depuis le site insee.fr :  
+
+```r
+library(parquetize)
+
+dir.create("Data")
+
+# Récupération d'un fichier parquet de 3,7 millions de lignes et 5 colonnes
+csv_to_parquet(
+  url_to_csv = "https://www.insee.fr/fr/statistiques/fichier/2540004/dpt2021_csv.zip",
+  csv_as_a_zip = TRUE,
+  filename_in_zip = "dpt2021.csv",
+  path_to_parquet = "Data"
+)
+```
+
+Puis requêtons-le avec nos 2 languages favoris :  
+
+- Avec Python :  
+
+```python
+resultat_python = pl.scan_parquet("Data/dpt2021.parquet").filter(
+    pl.col("preusuel") == "LINO").groupby(
+      "dpt").agg(
+        pl.col("nombre").sum().alias("total")
+      ).collect()
+```
+
+- Avec R :  
+
+```r
+resultat_R <- scan_parquet(
+  file = "Data/dpt2021.parquet")$filter(
+    pl$col("preusuel") == "LINO")$groupby(
+      "dpt")$agg(
+        pl$col("nombre")$sum()$alias("total")
+      )$collect()$as_data_frame() 
+```
+
 
 # API fluide
 
